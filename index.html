@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FluxoMed — Agenda e Prontuário</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f8f4;--surface:#fff;--ink:#12301f;--muted:#5a7466;--line:#d3e3d8;--brand:#1e7a46;--brand-ink:#fff;--gold:#b8e8c9;--ok:#1d6b45;--warn:#8a5a00;--bad:#a82a3a;--okbg:#dff1e6;--warnbg:#fdecc4;--badbg:#f9dde0;--doneBg:#dde8f3;--done:#1f4f82;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a14;--surface:#17261e;--ink:#e6f4ea;--muted:#9bb8a6;--line:#2a4034;--brand:#6fd49a;--brand-ink:#07271a;--ok:#7fd9a6;--warn:#f2c46a;--bad:#f59aa6;--okbg:#17372a;--warnbg:#3d3012;--badbg:#44212a;--doneBg:#1d2e47;--done:#a6c4ee}}
+:root[data-theme="dark"]{--bg:#0f1a14;--surface:#17261e;--ink:#e6f4ea;--muted:#9bb8a6;--line:#2a4034;--brand:#6fd49a;--brand-ink:#07271a;--ok:#7fd9a6;--warn:#f2c46a;--bad:#f59aa6;--okbg:#17372a;--warnbg:#3d3012;--badbg:#44212a;--doneBg:#1d2e47;--done:#a6c4ee}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px;line-height:1.5}
+h1,h2,h3,.logo{font-family:"Bricolage Grotesque","DM Sans",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:.6rem .7rem;border:0;border-bottom:2px solid var(--line);border-radius:0;background:transparent}
+input:focus,select:focus,textarea:focus{border-bottom-color:var(--brand);outline:0}
+textarea{min-height:90px;resize:vertical;border:2px solid var(--line);border-radius:4px}
+textarea:focus{border-color:var(--brand)}
+select option{color:#12301f}
+label{display:block;font-size:.85rem;font-weight:700;color:var(--muted);margin:.8rem 0 .1rem}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.btn{border:2px solid var(--brand);background:var(--brand);color:var(--brand-ink);padding:.5rem 1rem;border-radius:3px;font-weight:700;cursor:pointer}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;color:var(--brand)}
+.btn.sm{padding:.25rem .6rem;font-size:.85rem}
+.btn.bad{border-color:var(--bad);color:var(--bad);background:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:1.5rem 1.2rem}
+#app.in{display:grid;grid-template-columns:230px 1fr;min-height:100vh;align-items:start}
+header.top{display:flex;flex-direction:column;align-items:flex-start;gap:1.2rem;padding:1.5rem 1.2rem;background:var(--surface);color:var(--ink);box-shadow:0 0 0 1px var(--line);position:sticky;top:0;min-height:100vh}
+header.top .btn.ghost{margin-top:auto}
+.logo{font-weight:800;font-size:1.5rem;letter-spacing:-.03em}
+.logo b{color:var(--brand)}
+header.top .logo b{color:var(--brand)}
+nav{display:flex;flex-direction:column;gap:.3rem;width:100%}
+nav button{border:0;background:transparent;padding:.6rem .8rem;border-radius:3px;cursor:pointer;font-weight:700;color:inherit;text-align:left;opacity:.75;border-left:4px solid transparent}
+nav button[aria-current="page"]{opacity:1;color:var(--brand);border-left-color:var(--brand);background:var(--okbg)}
+.card{box-shadow:0 0 0 1px var(--line);background:var(--surface);border-left:5px solid var(--brand);border-radius:3px;padding:1.1rem 1.3rem;margin-bottom:1.2rem}
+h1,h2,h3{margin:0 0 .6rem;letter-spacing:-.02em}
+h1{font-size:2rem}h2{font-size:1.25rem}h3{font-size:1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.4rem 1.2rem}
+.login{max-width:420px;margin:8vh auto}
+.hint{background:var(--okbg);color:var(--ink);border-radius:3px;padding:.7rem .9rem;font-size:.9rem;margin-top:1.2rem;border-left:4px solid var(--gold)}
+.err{color:var(--bad);font-size:.9rem;min-height:1.2rem;margin-top:.5rem;font-weight:700}
+.slot{display:flex;gap:.8rem;align-items:center;flex-wrap:wrap;padding:.8rem 0;border-top:1px dashed var(--line)}
+.slot:first-of-type{border-top:0}
+.time{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.2rem;min-width:4rem;font-variant-numeric:tabular-nums;color:var(--brand)}
+.info{flex:1;min-width:180px}
+.info small{color:var(--muted);display:block}
+.tag{padding:.1rem .55rem;border-radius:2px;font-size:.8rem;font-weight:700}
+.s-agendada{background:var(--warnbg);color:var(--warn)}
+.s-confirmada{background:var(--okbg);color:var(--ok)}
+.s-atendida{background:var(--doneBg);color:var(--done)}
+.s-cancelada{background:var(--badbg);color:var(--bad)}
+.acts{display:flex;gap:.4rem;flex-wrap:wrap}
+.evo{border-left:3px solid var(--brand);padding:.2rem .8rem;margin:.8rem 0}
+.evo small{color:var(--muted)}
+.empty{color:var(--muted);padding:.8rem 0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(1rem + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:.6rem 1rem;border-radius:3px;z-index:20}
+.modal{position:fixed;inset:0;background:rgba(8,30,18,.6);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:10}
+.paper{background:#fff;color:#111;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:1.5rem;border-radius:3px}
+.paper h2{border-bottom:3px solid #1e7a46;padding-bottom:.5rem}
+.paper pre{white-space:pre-wrap;font:inherit;margin:.3rem 0 1rem}
+.hidden{display:none!important}
+@media (max-width:800px){#app.in{display:block}header.top{flex-direction:row;flex-wrap:wrap;align-items:center;min-height:0;position:static}header.top .btn.ghost{margin-top:0;margin-left:auto}nav{flex-direction:row;width:auto}nav button{border-left:0;border-bottom:3px solid transparent}nav button[aria-current="page"]{border-bottom-color:var(--brand)}}
+@media print{body *{visibility:hidden}.paper,.paper *{visibility:visible}.modal{position:static;background:none;padding:0}.paper{position:absolute;left:0;top:0;max-height:none;overflow:visible}.noprint{display:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+var KEY='fluxomed:v1';
+var USERS={'recepcao@fluxomed.com':{senha:'fluxo123',nome:'Marina (recepção)',papel:'recepção'},'medico@fluxomed.com':{senha:'fluxo123',nome:'Dr. André Lima',papel:'médico'}};
+var MEDICOS=['Dr. André Lima','Dra. Beatriz Souza'];
+function hoje(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function seed(){var h=hoje();return{pacientes:['Carlos Menezes','Fernanda Alves','João Pedro Santos'],
+consultas:[{id:1,data:h,hora:'08:30',paciente:'Carlos Menezes',medico:'Dr. André Lima',motivo:'Retorno de exames',status:'confirmada'},{id:2,data:h,hora:'09:30',paciente:'Fernanda Alves',medico:'Dr. André Lima',motivo:'Dor lombar',status:'agendada'}],
+evolucoes:[{id:1,paciente:'Carlos Menezes',data:h,medico:'Dr. André Lima',texto:'Paciente relata melhora da queixa inicial. Exames dentro da normalidade. Mantida conduta.'}],nextId:10}}
+var db,user=null,tab='agenda',dia=hoje(),pac='',toastT;
+function load(){try{var r=localStorage.getItem(KEY);if(r){db=JSON.parse(r);return}}catch(e){}db=seed()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function fmt(d){var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]}
+function toast(m){var t=document.getElementById('toast');if(t)t.remove();t=document.createElement('div');t.id='toast';t.className='toast';t.textContent=m;document.body.appendChild(t);clearTimeout(toastT);toastT=setTimeout(function(){t.remove()},2200)}
+function render(){var a=document.getElementById('app');a.className=user?'in':'';if(!user){a.innerHTML=loginView();return}
+a.innerHTML='<header class="top"><span class="logo">Fluxo<b>Med</b></span><nav aria-label="Seções"><button data-tab="agenda" '+(tab==='agenda'?'aria-current="page"':'')+'>Agenda</button><button data-tab="pront" '+(tab==='pront'?'aria-current="page"':'')+'>Prontuário</button></nav><span>'+esc(user.nome)+'</span><button class="btn ghost sm" id="sair">Sair</button></header><main class="wrap">'+(tab==='agenda'?agendaView():prontView())+'</main><div id="modal"></div>'}
+function loginView(){return'<div class="wrap"><form class="card login" id="login"><div class="logo" style="font-size:1.8rem;margin-bottom:.4rem">Fluxo<b>Med</b></div><p style="color:var(--muted);margin-top:0">Agenda e prontuário para a sua clínica.</p><label for="u">E-mail</label><input id="u" type="email" autocomplete="username" required><label for="p">Senha</label><input id="p" type="password" autocomplete="current-password" required><div class="err" id="err" role="alert"></div><button class="btn" style="width:100%">Entrar</button><div class="hint"><b>Acesso de teste</b><br>Recepção: recepcao@fluxomed.com<br>Médico: medico@fluxomed.com<br>Senha (ambos): fluxo123</div></form></div>'}
+function agendaView(){var l=db.consultas.filter(function(c){return c.data===dia}).sort(function(a,b){return a.hora<b.hora?-1:1});
+var h='<h1>Agenda</h1><div class="card"><h2>Nova consulta</h2><form id="nova"><div class="grid"><div><label for="d">Data</label><input id="d" type="date" value="'+dia+'" required></div><div><label for="h">Horário</label><input id="h" type="time" step="900" required></div><div><label for="pc">Paciente</label><input id="pc" list="pl" required><datalist id="pl">'+db.pacientes.map(function(p){return'<option value="'+esc(p)+'">'}).join('')+'</datalist></div><div><label for="m">Médico</label><select id="m">'+MEDICOS.map(function(m){return'<option>'+esc(m)+'</option>'}).join('')+'</select></div></div><label for="mo">Motivo</label><input id="mo"><div class="err" id="err" role="alert"></div><button class="btn">Agendar consulta</button></form></div>';
+h+='<div class="card"><div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;margin-bottom:.4rem"><h2 style="margin:0">Consultas de '+fmt(dia)+'</h2><input type="date" id="dia" value="'+dia+'" aria-label="Escolher dia" style="width:auto"></div>';
+if(!l.length)h+='<div class="empty">Nenhuma consulta neste dia. Use o formulário acima para agendar.</div>';
+l.forEach(function(c){h+='<div class="slot"><span class="time">'+c.hora+'</span><div class="info"><b>'+esc(c.paciente)+'</b><small>'+esc(c.medico)+(c.motivo?' · '+esc(c.motivo):'')+'</small></div><span class="tag s-'+c.status+'">'+c.status+'</span><div class="acts">'+(c.status==='agendada'?'<button class="btn sm" data-st="confirmada" data-id="'+c.id+'">Confirmar</button>':'')+(c.status==='confirmada'?'<button class="btn sm" data-st="atendida" data-id="'+c.id+'">Marcar atendida</button>':'')+(c.status!=='cancelada'&&c.status!=='atendida'?'<button class="btn sm bad" data-st="cancelada" data-id="'+c.id+'">Cancelar</button>':'')+'<button class="btn sm ghost" data-pront="'+esc(c.paciente)+'">Prontuário</button></div></div>'});
+return h+'</div>'}
+function prontView(){if(!pac&&db.pacientes.length)pac=db.pacientes[0];
+var h='<h1>Prontuário</h1><div class="card"><label for="sp" style="margin-top:0">Paciente</label><select id="sp">'+db.pacientes.map(function(p){return'<option'+(p===pac?' selected':'')+'>'+esc(p)+'</option>'}).join('')+'</select></div>';
+var ev=db.evolucoes.filter(function(e){return e.paciente===pac}).sort(function(a,b){return b.id-a.id});
+h+='<div class="card"><h2>Histórico clínico</h2>';if(!ev.length)h+='<div class="empty">Sem registros para este paciente.</div>';
+ev.forEach(function(e){h+='<div class="evo"><small>'+fmt(e.data)+' · '+esc(e.medico)+'</small><div>'+esc(e.texto)+'</div></div>'});
+h+='</div><div class="card"><h2>Nova evolução</h2><form id="evo"><label for="tx" style="margin-top:0">Registro da consulta</label><textarea id="tx" required></textarea><button class="btn" style="margin-top:.7rem">Salvar evolução</button></form></div>';
+h+='<div class="card"><h2>Receita</h2><form id="rec"><label for="rx" style="margin-top:0">Medicamentos e posologia</label><textarea id="rx" required placeholder="Ex.: Dipirona 500 mg — 1 comprimido a cada 6 horas por 3 dias"></textarea><label for="ori">Orientações</label><textarea id="ori" style="min-height:60px"></textarea><button class="btn" style="margin-top:.7rem">Gerar receita</button></form></div>';return h}
+function receita(rx,ori){var m=document.getElementById('modal');m.innerHTML='<div class="modal" id="mm"><div class="paper"><h2>Fluxo<span style="color:#1e7a46">Med</span> — Receituário</h2><p><b>Paciente:</b> '+esc(pac)+'<br><b>Data:</b> '+fmt(hoje())+'<br><b>Médico:</b> '+esc(user.papel==='médico'?user.nome:MEDICOS[0])+'</p><h3>Prescrição</h3><pre>'+esc(rx)+'</pre>'+(ori?'<h3>Orientações</h3><pre>'+esc(ori)+'</pre>':'')+'<p style="margin-top:2rem;border-top:1px solid #111;width:60%;padding-top:.3rem">Assinatura e carimbo</p><div class="noprint" style="display:flex;gap:.5rem"><button class="btn" id="imp">Imprimir / salvar em PDF</button><button class="btn ghost" id="fch">Fechar</button></div></div></div>'}
+document.addEventListener('click',function(e){var t=e.target.closest('button');if(!t)return;
+if(t.dataset.tab){tab=t.dataset.tab;render()}
+else if(t.id==='sair'){user=null;render()}
+else if(t.dataset.st){var c=db.consultas.find(function(x){return x.id==t.dataset.id});c.status=t.dataset.st;save();render();toast('Consulta '+c.status)}
+else if(t.dataset.pront){pac=t.dataset.pront;tab='pront';render()}
+else if(t.id==='imp'){try{window.print()}catch(x){toast('Use Ctrl+P para imprimir')}}
+else if(t.id==='fch'){document.getElementById('modal').innerHTML=''}});
+document.addEventListener('change',function(e){if(e.target.id==='dia'&&e.target.value){dia=e.target.value;render()}if(e.target.id==='sp'){pac=e.target.value;render()}});
+document.addEventListener('submit',function(e){e.preventDefault();var f=e.target.id;
+if(f==='login'){var u=USERS[document.getElementById('u').value.trim().toLowerCase()];if(u&&u.senha===document.getElementById('p').value){user=u;tab=u.papel==='médico'?'agenda':'agenda';render()}else document.getElementById('err').textContent='E-mail ou senha incorretos. Confira o acesso de teste abaixo.'}
+else if(f==='nova'){var d=document.getElementById('d').value,h=document.getElementById('h').value,p=document.getElementById('pc').value.trim(),m=document.getElementById('m').value,mo=document.getElementById('mo').value.trim();
+var conf=db.consultas.some(function(c){return c.data===d&&c.hora===h&&c.medico===m&&c.status!=='cancelada'});
+if(conf){document.getElementById('err').textContent='Conflito: '+m+' já tem consulta às '+h+' em '+fmt(d)+'. Escolha outro horário.';return}
+if(db.pacientes.indexOf(p)<0)db.pacientes.push(p);db.consultas.push({id:db.nextId++,data:d,hora:h,paciente:p,medico:m,motivo:mo,status:'agendada'});dia=d;save();render();toast('Consulta agendada')}
+else if(f==='evo'){db.evolucoes.push({id:db.nextId++,paciente:pac,data:hoje(),medico:user.papel==='médico'?user.nome:MEDICOS[0],texto:document.getElementById('tx').value.trim()});save();render();toast('Evolução salva')}
+else if(f==='rec'){receita(document.getElementById('rx').value.trim(),document.getElementById('ori').value.trim())}});
+load();render();
+</script>
+</body>
+</html>
